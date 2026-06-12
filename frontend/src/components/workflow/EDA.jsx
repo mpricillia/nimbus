@@ -34,7 +34,7 @@ const EDA = ({ isLocked, datasetInfo, onComplete }) => {
   const fetchEDA = async () => {
     setLoading(true);
     try {
-      const res = await axios.post('http://localhost:8000/api/eda', {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/eda`, {
         feature_x: biFeatureX,
         feature_y: biFeatureY
       });
