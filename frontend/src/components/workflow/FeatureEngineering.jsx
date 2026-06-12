@@ -45,7 +45,7 @@ const FeatureEngineering = ({ isLocked, onComplete, onReset, selectedFeatures = 
     setLoading(true);
     try {
       const activeTransformations = Object.keys(transformations).filter(k => transformations[k] && isOptionAvailable(k));
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/feature_engineering`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/feature_engineering`, {
         transformations: activeTransformations
       });
       setResult(res.data.info);

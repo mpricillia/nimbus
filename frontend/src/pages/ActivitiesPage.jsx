@@ -33,7 +33,7 @@ const ActivitiesPage = () => {
   useEffect(() => {
     const fetchModels = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/models`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models`);
         if (res.data.status === 'success') {
           // Filter out models that might be incomplete or missing metrics
           setModels(res.data.models.filter(m => m.metrics));

@@ -13,7 +13,7 @@ const Preprocessing = ({ isLocked, onComplete, onReset }) => {
   const handleProcess = async () => {
     setLoading(true);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/preprocess`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/preprocess`, {
         test_size: testSize / 100,
         random_state: parseInt(randomState),
         apply_log: applyLog,

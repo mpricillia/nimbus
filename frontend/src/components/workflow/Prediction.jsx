@@ -26,7 +26,7 @@ const Prediction = ({ isLocked, trainResults, features }) => {
 
     const fetchFromApi = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/models`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models`);
         if (res.data.status === 'success' && res.data.models.length > 0) {
           // Sort newest first
           const sorted = [...res.data.models]
@@ -58,7 +58,7 @@ const Prediction = ({ isLocked, trainResults, features }) => {
       Object.keys(inputData).forEach(k => {
         processedData[k] = parseFloat(inputData[k]) || 0;
       });
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/predict`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/predict`, {
         custom_model_name: selectedModel || models[0]?.name,
         input_data: processedData
       });

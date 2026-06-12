@@ -11,7 +11,7 @@ const DatasetLoader = ({ isLocked, onComplete }) => {
     setLoading(true);
     try {
       // Connect to FastAPI backend
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/load_data`, { filename: 'dataset.csv' });
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/load_data`, { filename: 'dataset.csv' });
       setInfo(res.data.info);
       setSuccessMsg('Successfully loaded train.csv and test.csv into pipeline.');
       onComplete(res.data.info);

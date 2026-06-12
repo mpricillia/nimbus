@@ -33,7 +33,7 @@ const ModelTraining = ({ isLocked, onComplete, onReset }) => {
       if (replace) {
         try { await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models/${name}`); } catch (e) {}
       }
-      const res = await axios.post(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/train`, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/train`, {
         model_algo: selectedModel,
         custom_model_name: name,
         params: buildParams()
@@ -64,7 +64,7 @@ const ModelTraining = ({ isLocked, onComplete, onReset }) => {
 
     // Poin 6: check for duplicate name in Supabase
     try {
-      const checkRes = await axios.get(`${import.meta.env.VITE_API_URL || '${import.meta.env.VITE_API_URL || 'http://localhost:8000'}'}/api/models`);
+      const checkRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models`);
       if (checkRes.data.status === 'success') {
         const existingNames = checkRes.data.models.map(m => m.name);
         if (existingNames.includes(customName.trim())) {
