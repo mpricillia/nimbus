@@ -1,0 +1,157 @@
+.dashboard-page {
+  padding-top: 70px; /* Below navbar */
+  min-height: 100vh;
+  position: relative;
+}
+
+.dashboard-layout {
+  display: flex;
+  max-width: 1600px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Progress Rail */
+.progress-rail {
+  width: 120px;
+  position: fixed;
+  left: 0;
+  top: 100px;
+  bottom: 40px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Reset All rail button */
+.rail-reset-btn {
+  position: absolute;
+  top: 85%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  background: transparent;
+  color: #e74c3c;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.rail-reset-btn:hover {
+  background: rgba(231, 76, 60, 0.1);
+  border-color: #e74c3c;
+  color: #c0392b;
+  transform: translateX(-50%) scale(1.05);
+}
+
+.progress-line-bg {
+  position: absolute;
+  top: 8px;
+  height: 72%;
+  width: 2px;
+  left: calc(50% - 1px);
+  background: var(--outline-variant);
+  border-radius: 2px;
+}
+
+.progress-line-fill {
+  width: 100%;
+  background: var(--on-surface-variant);
+  box-shadow: 0 0 15px var(--on-surface-variant);
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 2px;
+}
+
+.progress-node {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--outline-variant);
+  left: calc(50% - 8px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-node.completed {
+  background: var(--on-surface-variant);
+  border-color: var(--on-surface-variant);
+  box-shadow: 0 0 10px var(--on-surface-variant);
+}
+
+.progress-node.current {
+  transform: scale(1.25);
+  border-color: var(--on-surface);
+}
+
+.node-label {
+  position: absolute;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--outline);
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+.progress-node.completed .node-label {
+  color: var(--on-surface);
+  font-weight: 600;
+}
+
+.progress-node.current .node-label {
+  color: var(--on-surface);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+/* Main Content */
+.dashboard-content {
+  flex: 1;
+  margin-left: 140px; /* Offset for rail */
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+}
+
+/* Workflow Section Base */
+.workflow-section {
+  position: relative;
+}
+
+.lock-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(10, 10, 15, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--outline);
+  font-family: var(--font-code);
+}
+
+@media (max-width: 1024px) {
+  .progress-rail {
+    display: none;
+  }
+  .dashboard-content {
+    margin-left: 0;
+  }
+}

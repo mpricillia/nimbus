@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pandas
+scikit-learn
+xgboost
+lightgbm
+catboost
+supabase
+pydantic
+python-multipart
+python-dotenv

@@ -1,0 +1,62 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  padding: 8px 0;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.brand-icon {
+  margin-right: 12px;
+  filter: drop-shadow(0 0 8px rgba(0, 209, 255, 0.6));
+}
+
+.nav-links {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-links a {
+  color: var(--on-surface-variant);
+  font-family: var(--font-display);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 14px;
+}
+
+.nav-links a:hover, .nav-links a.active {
+  color: var(--primary-fixed-dim);
+  text-shadow: 0 0 8px rgba(0, 209, 255, 0.6);
+}
+
+.profile-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--primary-fixed-dim);
+  background: rgba(0, 209, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.profile-btn:hover {
+  box-shadow: 0 0 15px rgba(0, 209, 255, 0.4);
+}
