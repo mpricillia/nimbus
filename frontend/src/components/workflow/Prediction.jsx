@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Zap } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const Prediction = ({ isLocked, trainResults, features }) => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [models, setModels] = useState([]); // [{name, r2}] sorted newest first
   const [selectedModel, setSelectedModel] = useState('');
@@ -28,9 +30,9 @@ const Prediction = ({ isLocked, trainResults, features }) => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models`);
         if (res.data.status === 'success' && res.data.models.length > 0) {
-          // Sort newest first
+          // Sort newest first and filter by user
           const sorted = [...res.data.models]
-            .filter(m => m.metrics)
+            .filter(m => m.metrics && m.user_email === user?.email)
             .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
           const list = sorted.map(m => ({
             name: m.name,

@@ -60,6 +60,7 @@ class TrainRequest(BaseModel):
     model_algo: str
     custom_model_name: str
     params: Optional[Dict[str, Any]] = None
+    user_email: Optional[str] = None
 
 class PredictRequest(BaseModel):
     custom_model_name: str
@@ -158,7 +159,8 @@ def train_model(req: TrainRequest):
                     "algorithm": req.model_algo,
                     "created_at": datetime.now().isoformat(),
                     "metrics": result,
-                    "params": req.params
+                    "params": req.params,
+                    "user_email": req.user_email
                 }
                 metadata_filename = os.path.join(temp_dir, f"{req.custom_model_name}_metadata.json")
                 with open(metadata_filename, 'w') as f:

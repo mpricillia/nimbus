@@ -6,7 +6,7 @@ import { Activity, X, Trash2, Cpu, AlertTriangle } from 'lucide-react';
 import './ActivitiesPage.css';
 
 const ActivitiesPage = () => {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [models, setModels] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,7 +36,9 @@ const ActivitiesPage = () => {
         const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models`);
         if (res.data.status === 'success') {
           // Filter out models that might be incomplete or missing metrics
-          setModels(res.data.models.filter(m => m.metrics));
+          // Also only show models belonging to the current user
+          const userModels = res.data.models.filter(m => m.metrics && m.user_email === user?.email);
+          setModels(userModels);
         }
       } catch (err) {
         console.error('Error fetching models:', err);

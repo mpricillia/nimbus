@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Lock, Play, Activity, Save, AlertTriangle, X } from 'lucide-react';
 import axios from 'axios';
+import { useAuth } from '../../context/AuthContext';
 
 const ModelTraining = ({ isLocked, onComplete, onReset }) => {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   // Poin 5: default empty — user must pick a model first
   const [selectedModel, setSelectedModel] = useState('');
@@ -36,7 +38,8 @@ const ModelTraining = ({ isLocked, onComplete, onReset }) => {
       const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/train`, {
         model_algo: selectedModel,
         custom_model_name: name,
-        params: buildParams()
+        params: buildParams(),
+        user_email: user?.email
       });
       const newResults = { ...results, [name]: res.data.result };
       setResults(newResults);
