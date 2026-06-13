@@ -25,10 +25,22 @@ class PowerFlowPipeline:
         self.target_col = 'electricity_consumption'
 
     def load_dataset(self, filename="dataset.csv"):
-        # We assume the user wants to load both but we work primarily on train.csv for the pipeline
-        filepath = os.path.join(self.data_dir, "train.csv")
-        if not os.path.exists(filepath):
-            raise FileNotFoundError(f"Dataset train.csv not found in {self.data_dir}.")
+        # Check potential paths for the dataset (Local vs Hugging Face deployment)
+        possible_paths = [
+            os.path.join(self.data_dir, "train.csv"),  # Local development
+            "train.csv",                               # Hugging Face root if uploaded directly
+            "data/train.csv"                           # Hugging Face if uploaded inside a data folder
+        ]
+        
+        filepath = None
+        for p in possible_paths:
+            if os.path.exists(p):
+                filepath = p
+                break
+                
+        if not filepath:
+            raise FileNotFoundError("Dataset train.csv not found on the server. Please ensure it is uploaded.")
+            
         self.df = pd.read_csv(filepath)
         
         # Get basic info
