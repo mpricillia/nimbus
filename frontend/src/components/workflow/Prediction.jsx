@@ -53,8 +53,6 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
     });
   }, [trainResults]);
 
-  const allFilled = displayFeatures.every(f => inputData[f.name] !== undefined && inputData[f.name] !== '');
-
   const handlePredict = async () => {
     if (!allFilled) {
       alert('Please fill in all input fields before generating a prediction.');
@@ -99,6 +97,8 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
     { name: 'et0_fao_evapotranspiration', min: 0, max: 10, step: 0.1 },
     { name: 'cluster_id', min: 1, max: 4, step: 1 },
   ];
+
+  const allFilled = displayFeatures.every(f => inputData[f.name] !== undefined && inputData[f.name] !== '');
 
   // Poin 8: Compute dynamic prediction confidence
   const selectedModelData = models.find(m => m.name === selectedModel);
