@@ -314,6 +314,9 @@ const Dashboard = () => {
               isLocked={!unlockedSteps.includes(7)}
               trainResults={pipelineData.trainResults}
               features={pipelineData.preprocessInfo?.features || []}
+              onComplete={() => {
+                setCompletedSteps(prev => prev.includes(7) ? prev : [...prev, 7]);
+              }}
             />
           </div>
 

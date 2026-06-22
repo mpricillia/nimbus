@@ -3,7 +3,7 @@ import { Lock, Zap } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 
-const Prediction = ({ isLocked, trainResults, features }) => {
+const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [models, setModels] = useState([]); // [{name, r2}] sorted newest first
@@ -65,6 +65,7 @@ const Prediction = ({ isLocked, trainResults, features }) => {
         input_data: processedData
       });
       setPrediction(res.data.prediction);
+      if (onComplete) onComplete();
     } catch (err) {
       console.error(err);
       alert('Prediction failed. Please ensure all required features are provided.');

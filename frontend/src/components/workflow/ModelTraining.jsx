@@ -282,6 +282,28 @@ const ModelTraining = ({ isLocked, onComplete, onReset }) => {
         </div>
 
         {Object.keys(results).length > 0 && (
+          <div style={{
+            marginTop: '24px',
+            marginBottom: '24px',
+            padding: '16px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid var(--outline-variant)',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            color: 'var(--on-surface-variant)',
+            fontFamily: 'var(--font-body)',
+            lineHeight: '1.6'
+          }}>
+            <h4 style={{ color: 'var(--on-surface)', marginBottom: '8px', fontSize: '0.9rem', fontFamily: 'var(--font-display)' }}>How to read these metrics?</h4>
+            <ul style={{ margin: 0, paddingLeft: '20px' }}>
+              <li style={{ marginBottom: '8px' }}><strong>RMSE (Root Mean Square Error):</strong> Measures the average error of the predictions. <strong style={{color: 'var(--primary-fixed-dim)'}}>Lower is better.</strong> A value closer to 0 means the model's predictions are very close to the actual data.</li>
+              <li style={{ marginBottom: '8px' }}><strong>MAE (Mean Absolute Error):</strong> The average absolute difference between predicted and actual values. <strong style={{color: 'var(--primary-fixed-dim)'}}>Lower is better.</strong> It represents the standard margin of error for each prediction.</li>
+              <li><strong>R² SCORE (R-Squared):</strong> Represents the percentage of the data's variance that the model explains. <strong style={{color: 'var(--primary-fixed-dim)'}}>Higher is better.</strong> A score close to 1.0 (or 100%) indicates a highly accurate and excellent model, while a score below 0.5 indicates poor accuracy.</li>
+            </ul>
+          </div>
+        )}
+
+        {Object.keys(results).length > 0 && (
           <div className="continue-btn-container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             {/* Poin 1: Reset per step */}
             <button

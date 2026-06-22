@@ -56,7 +56,12 @@ const ActivitiesPage = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return 'Unknown Date';
-    const d = new Date(dateString);
+    let ds = dateString;
+    // HuggingFace server time is UTC but might lack the 'Z' suffix
+    if (!ds.endsWith('Z') && !ds.includes('+')) {
+      ds += 'Z';
+    }
+    const d = new Date(ds);
     return d.toLocaleDateString('en-US', { 
       year: 'numeric', month: 'short', day: 'numeric',
       hour: '2-digit', minute: '2-digit'
@@ -154,9 +159,9 @@ const ActivitiesPage = () => {
             
             <div className="metrics-explanation">
               <h4>Metrics Guide</h4>
-              <p><strong>MAE (Mean Absolute Error):</strong> Rata-rata kesalahan mutlak prediksi. Semakin kecil nilainya (mendekati 0), semakin akurat modelnya.</p>
-              <p><strong>RMSE (Root Mean Square Error):</strong> Standar deviasi dari error prediksi. Sangat sensitif terhadap outlier. Semakin kecil semakin baik.</p>
-              <p><strong>R² (R-Squared):</strong> Persentase variansi data yang bisa dijelaskan oleh model. Mendekati 1.0 (100%) berarti sangat sempurna.</p>
+              <p><strong>MAE (Mean Absolute Error):</strong> The average absolute difference between predicted and actual values. Lower is better.</p>
+              <p><strong>RMSE (Root Mean Square Error):</strong> Measures the average error of the predictions. Highly sensitive to outliers. Lower is better.</p>
+              <p><strong>R² SCORE (R-Squared):</strong> Represents the percentage of the data's variance that the model explains. Higher is better. Approaching 1.0 (100%) indicates a highly accurate model.</p>
             </div>
             
           </div>
