@@ -22,6 +22,7 @@ class PowerFlowPipeline:
         self.models = {}
         self.scalers = {}
         self.encoders = {}
+        self.feature_means = {}
         self.target_col = 'electricity_consumption'
 
     def load_dataset(self, filename="dataset.csv"):
@@ -159,6 +160,9 @@ class PowerFlowPipeline:
             X[col] = le.fit_transform(X[col].astype(str))
             self.encoders[col] = le
             
+        # Save feature means to fill missing values during prediction
+        self.feature_means = X.mean().to_dict()
+            
         # Train test split
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             X, y, test_size=test_size, random_state=random_state, shuffle=False
@@ -243,10 +247,10 @@ class PowerFlowPipeline:
         model = self.models[custom_model_name]
         df_in = pd.DataFrame([input_data])
         
-        # Add missing columns with 0 or mean
+        # Add missing columns with the training mean
         for col in self.X_train.columns:
             if col not in df_in.columns:
-                df_in[col] = 0
+                df_in[col] = self.feature_means.get(col, 0)
                 
         # Ensure order matches
         df_in = df_in[self.X_train.columns]
@@ -256,7 +260,7 @@ class PowerFlowPipeline:
             if col in df_in.columns:
                 # Basic handling of unseen labels
                 known_classes = list(le.classes_)
-                df_in[col] = df_in[col].apply(lambda x: x if x in known_classes else known_classes[0])
+                df_in[col] = df_in[col].apply(lambda x: str(x) if str(x) in known_classes else known_classes[0])
                 df_in[col] = le.transform(df_in[col].astype(str))
                 
         # Apply scaler

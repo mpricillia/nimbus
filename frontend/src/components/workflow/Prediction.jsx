@@ -53,7 +53,13 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
     });
   }, [trainResults]);
 
+  const allFilled = displayFeatures.every(f => inputData[f.name] !== undefined && inputData[f.name] !== '');
+
   const handlePredict = async () => {
+    if (!allFilled) {
+      alert('Please fill in all input fields before generating a prediction.');
+      return;
+    }
     setLoading(true);
     try {
       const processedData = {};
@@ -192,11 +198,22 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
               })}
             </div>
 
+            {!allFilled && models.length > 0 && (
+              <div style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: '16px', textAlign: 'center', fontFamily: 'var(--font-code)' }}>
+                * Please fill in all {displayFeatures.length} fields above to enable prediction.
+              </div>
+            )}
+            
             <button
               className="btn btn-primary"
-              style={{ marginTop: '24px', width: '100%' }}
+              style={{ 
+                marginTop: '16px', 
+                width: '100%', 
+                opacity: (!allFilled || loading || models.length === 0) ? 0.5 : 1,
+                cursor: (!allFilled || loading || models.length === 0) ? 'not-allowed' : 'pointer'
+              }}
               onClick={handlePredict}
-              disabled={loading || models.length === 0}
+              disabled={!allFilled || loading || models.length === 0}
             >
               <Zap size={18} />
               {loading ? 'CALCULATING...' : 'GENERATE PREDICTION'}
