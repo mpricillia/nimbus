@@ -65,6 +65,7 @@ class TrainRequest(BaseModel):
 class PredictRequest(BaseModel):
     custom_model_name: str
     input_data: Dict[str, Any]
+    user_email: Optional[str] = None
 
 @app.get("/")
 def read_root():
@@ -118,12 +119,14 @@ def preprocess_data(req: PreprocessRequest):
 @app.post("/api/train")
 def train_model(req: TrainRequest):
     try:
+        unique_model_name = f"{req.user_email}_{req.custom_model_name}" if req.user_email else req.custom_model_name
+        
         if supabase:
             try:
-                # Check for existing models to prevent duplication
+                # Check for existing models to prevent duplication for this user
                 existing_models = supabase.storage.from_("models").list()
                 for item in existing_models:
-                    if item.get("name") == req.custom_model_name:
+                    if item.get("name") == unique_model_name:
                         raise HTTPException(status_code=400, detail=f"Model name '{req.custom_model_name}' already exists. Please choose a different name.")
             except HTTPException:
                 raise
@@ -136,17 +139,20 @@ def train_model(req: TrainRequest):
 
         result = pipeline.train_model(req.model_algo, req.custom_model_name, req.params)
         
+        if unique_model_name != req.custom_model_name:
+            pipeline.models[unique_model_name] = pipeline.models.pop(req.custom_model_name)
+        
         if supabase:
             try:
                 # Save locally first in a temp directory to avoid triggering uvicorn reload
                 temp_dir = tempfile.gettempdir()
-                model_filename = os.path.join(temp_dir, f"{req.custom_model_name}.joblib")
-                joblib.dump(pipeline.models[req.custom_model_name], model_filename)
+                model_filename = os.path.join(temp_dir, f"{unique_model_name}.joblib")
+                joblib.dump(pipeline.models[unique_model_name], model_filename)
                 
                 # Upload to Supabase Storage
                 with open(model_filename, 'rb') as f:
                     res = supabase.storage.from_("models").upload(
-                        path=f"{req.custom_model_name}/{req.custom_model_name}.joblib",
+                        path=f"{unique_model_name}/{req.custom_model_name}.joblib",
                         file=f,
                         file_options={"content-type": "application/octet-stream", "upsert": "true"}
                     )
@@ -162,13 +168,13 @@ def train_model(req: TrainRequest):
                     "params": req.params,
                     "user_email": req.user_email
                 }
-                metadata_filename = os.path.join(temp_dir, f"{req.custom_model_name}_metadata.json")
+                metadata_filename = os.path.join(temp_dir, f"{unique_model_name}_metadata.json")
                 with open(metadata_filename, 'w') as f:
                     json.dump(metadata, f)
                 
                 with open(metadata_filename, 'rb') as f:
                     supabase.storage.from_("models").upload(
-                        path=f"{req.custom_model_name}/metadata.json",
+                        path=f"{unique_model_name}/metadata.json",
                         file=f,
                         file_options={"content-type": "application/json", "upsert": "true"}
                     )
@@ -189,7 +195,8 @@ def train_model(req: TrainRequest):
 @app.post("/api/predict")
 def predict(req: PredictRequest):
     try:
-        pred = pipeline.predict(req.custom_model_name, req.input_data)
+        unique_model_name = f"{req.user_email}_{req.custom_model_name}" if req.user_email else req.custom_model_name
+        pred = pipeline.predict(unique_model_name, req.input_data)
         return {"status": "success", "prediction": pred}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -220,18 +227,19 @@ def get_models():
         raise HTTPException(status_code=400, detail=str(e))
 
 @app.delete("/api/models/{model_name}")
-def delete_model(model_name: str):
+def delete_model(model_name: str, user_email: Optional[str] = None):
     if not supabase:
         raise HTTPException(status_code=500, detail="Supabase not configured.")
     try:
+        unique_model_name = f"{user_email}_{model_name}" if user_email else model_name
         # Delete model file
         try:
-            supabase.storage.from_("models").remove([f"{model_name}/{model_name}.joblib"])
+            supabase.storage.from_("models").remove([f"{unique_model_name}/{model_name}.joblib"])
         except Exception:
             pass
         # Delete metadata file
         try:
-            supabase.storage.from_("models").remove([f"{model_name}/metadata.json"])
+            supabase.storage.from_("models").remove([f"{unique_model_name}/metadata.json"])
         except Exception:
             pass
         return {"status": "success", "message": f"Model '{model_name}' deleted."}

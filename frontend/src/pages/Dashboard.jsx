@@ -30,10 +30,10 @@ const Dashboard = () => {
     trainResults: null,
   });
 
-  // Restore from localStorage
+  // Restore from sessionStorage
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = sessionStorage.getItem(STORAGE_KEY);
       if (saved) {
         const { unlocked, completed } = JSON.parse(saved);
         if (Array.isArray(unlocked) && unlocked.length > 0) setUnlockedSteps(unlocked);
@@ -42,10 +42,10 @@ const Dashboard = () => {
     } catch (e) {}
   }, []);
 
-  // Persist to localStorage
+  // Persist to sessionStorage
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
         unlocked: unlockedSteps,
         completed: completedSteps,
       }));
@@ -95,7 +95,7 @@ const Dashboard = () => {
     });
     setUnlockedSteps([1]);
     setCompletedSteps([]);
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
     // Scroll back to top / step 1
     setTimeout(() => {
       const el = document.getElementById('step-1');

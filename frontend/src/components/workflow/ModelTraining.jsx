@@ -33,7 +33,7 @@ const ModelTraining = ({ isLocked, onComplete, onReset }) => {
     setDuplicateDialog(null);
     try {
       if (replace) {
-        try { await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models/${name}`); } catch (e) {}
+        try { await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models/${name}?user_email=${user?.email}`); } catch (e) {}
       }
       const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/train`, {
         model_algo: selectedModel,
@@ -69,7 +69,9 @@ const ModelTraining = ({ isLocked, onComplete, onReset }) => {
     try {
       const checkRes = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models`);
       if (checkRes.data.status === 'success') {
-        const existingNames = checkRes.data.models.map(m => m.name);
+        const existingNames = checkRes.data.models
+          .filter(m => m.user_email === user?.email)
+          .map(m => m.name);
         if (existingNames.includes(customName.trim())) {
           setDuplicateDialog({ name: customName.trim() });
           return;

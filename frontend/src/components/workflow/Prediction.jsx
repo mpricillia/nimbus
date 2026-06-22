@@ -62,7 +62,8 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
       });
       const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/predict`, {
         custom_model_name: selectedModel || models[0]?.name,
-        input_data: processedData
+        input_data: processedData,
+        user_email: user?.email
       });
       setPrediction(res.data.prediction);
       if (onComplete) onComplete();

@@ -18,7 +18,7 @@ const ActivitiesPage = () => {
     if (!modelToDelete) return;
     setIsDeleting(true);
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models/${modelToDelete}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/models/${modelToDelete}?user_email=${user?.email}`);
       setModels(prev => prev.filter(m => m.name !== modelToDelete));
       if (selectedModel?.name === modelToDelete) setSelectedModel(null);
       setModelToDelete(null);
