@@ -105,22 +105,52 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
   let confidencePct = null;
 
   if (prediction !== null && selectedModelData) {
-    if (selectedModelData.rmse != null) {
-      // RMSE is log-scaled. Convert to approximate relative error
-      const relativeError = Math.exp(selectedModelData.rmse) - 1;
-      let conf = 100 - (relativeError * 100);
-      
-      // Penalty for outlier predictions (assuming typical consumption is around 350 GWh)
-      const penalty = (Math.abs(prediction - 350) / 350) * 3; // 0 to 3% penalty
-      conf = Math.max(0, Math.min(99.9, conf - penalty));
-      confidencePct = `${conf.toFixed(1)}%`;
-    } else if (selectedModelData.r2 != null) {
-      // Fallback if no RMSE
-      let conf = selectedModelData.r2 * 100;
-      const penalty = (Math.abs(prediction - 350) / 350) * 2;
-      conf = Math.max(0, Math.min(99.9, conf - penalty));
-      confidencePct = `${conf.toFixed(1)}%`;
+    let baseConf = (selectedModelData.r2 != null ? selectedModelData.r2 : 0.8) * 100;
+    baseConf = Math.max(0, Math.min(100, baseConf));
+    
+    // Calculate penalty based on input extremity
+    let totalPenalty = 0;
+    displayFeatures.forEach(f => {
+      const val = parseFloat(inputData[f.name]);
+      if (!isNaN(val)) {
+        const mid = (f.max + f.min) / 2;
+        const rangeHalf = (f.max - f.min) / 2;
+        const distance = Math.abs(val - mid) / (rangeHalf || 1);
+        
+        if (distance > 1) {
+          totalPenalty += 5; // Extreme outlier
+        } else if (distance > 0.8) {
+          totalPenalty += 2; // Near the edge
+        }
+      }
+    });
+
+    let conf = Math.max(0, baseConf - totalPenalty);
+    
+    let color = '#e74c3c';
+    let icon = '🔴';
+    let text = 'Rendah';
+    let msg = 'Kondisi sangat ekstrem atau di luar kebiasaan historis.';
+    
+    if (conf >= 85) {
+      color = '#2ecc71';
+      icon = '🟢';
+      text = 'Tinggi';
+      msg = 'Sangat yakin. Kondisi mirip dengan pola historis.';
+    } else if (conf >= 70) {
+      color = '#f1c40f';
+      icon = '🟡';
+      text = 'Sedang';
+      msg = 'Cukup yakin. Terdapat sedikit kondisi yang tidak biasa.';
     }
+
+    confidencePct = {
+      val: `${conf.toFixed(1)}%`,
+      color,
+      icon,
+      text,
+      msg
+    };
   }
 
   return (
@@ -247,16 +277,45 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
               </div>
             )}
 
-            {/* Poin 8: confidence as R² percentage */}
+            {/* Poin 8: confidence indicator */}
             {prediction !== null && confidencePct && (
-              <div style={{ marginTop: '16px', fontFamily: 'var(--font-code)', color: 'var(--on-surface-variant)' }}>
-                <div style={{ fontSize: '10px', marginBottom: '4px', letterSpacing: '1px' }}>PREDICTION CONFIDENCE</div>
-                <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--on-surface)' }}>{confidencePct}</div>
+              <div style={{ marginTop: '24px', fontFamily: 'var(--font-body)' }}>
+                <div style={{ fontSize: '10px', marginBottom: '8px', letterSpacing: '1px', color: 'var(--on-surface-variant)', fontFamily: 'var(--font-code)' }}>
+                  TINGKAT KEYAKINAN PREDIKSI
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>{confidencePct.icon}</span>
+                  <span style={{ fontSize: '1.4rem', fontWeight: 'bold', color: confidencePct.color }}>
+                    {confidencePct.text} ({confidencePct.val})
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--on-surface-variant)', padding: '0 16px', lineHeight: '1.4' }}>
+                  {confidencePct.msg}
+                </div>
               </div>
             )}
           </div>
 
         </div>
+
+        {prediction !== null && confidencePct && (
+          <div style={{
+            marginTop: '24px',
+            padding: '16px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            border: '1px solid var(--outline-variant)',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            color: 'var(--on-surface-variant)',
+            fontFamily: 'var(--font-body)',
+            lineHeight: '1.6'
+          }}>
+            <h4 style={{ color: 'var(--on-surface)', marginBottom: '8px', fontSize: '0.9rem', fontFamily: 'var(--font-display)' }}>💡 Bagaimana Tingkat Keyakinan Dihitung?</h4>
+            <p style={{ margin: 0 }}>
+              Tingkat keyakinan diambil dari <strong>Kualitas Model Asli (Skor R²)</strong> yang dikurangi dengan <strong>Hukuman Data Ekstrem (Outlier Penalty)</strong>. Semakin ekstrem atau tidak wajar angka cuaca yang Anda masukkan dibandingkan batas wajar masa lalu, maka persentase keyakinan model akan semakin menurun.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
