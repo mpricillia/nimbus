@@ -129,19 +129,19 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
     
     let color = '#e74c3c';
     let icon = '🔴';
-    let text = 'Rendah';
-    let msg = 'Kondisi sangat ekstrem atau di luar kebiasaan historis.';
+    let text = 'Low';
+    let msg = 'Highly extreme conditions or far outside historical norms.';
     
     if (conf >= 85) {
       color = '#2ecc71';
       icon = '🟢';
-      text = 'Tinggi';
-      msg = 'Sangat yakin. Kondisi mirip dengan pola historis.';
+      text = 'High';
+      msg = 'Highly confident. Conditions closely match historical patterns.';
     } else if (conf >= 70) {
       color = '#f1c40f';
       icon = '🟡';
-      text = 'Sedang';
-      msg = 'Cukup yakin. Terdapat sedikit kondisi yang tidak biasa.';
+      text = 'Medium';
+      msg = 'Fairly confident. Contains some unusual weather conditions.';
     }
 
     confidencePct = {
@@ -281,7 +281,7 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
             {prediction !== null && confidencePct && (
               <div style={{ marginTop: '24px', fontFamily: 'var(--font-body)' }}>
                 <div style={{ fontSize: '10px', marginBottom: '8px', letterSpacing: '1px', color: 'var(--on-surface-variant)', fontFamily: 'var(--font-code)' }}>
-                  TINGKAT KEYAKINAN PREDIKSI
+                  PREDICTION CONFIDENCE
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', marginBottom: '8px' }}>
                   <span style={{ fontSize: '1.2rem' }}>{confidencePct.icon}</span>
@@ -310,9 +310,9 @@ const Prediction = ({ isLocked, trainResults, features, onComplete }) => {
             fontFamily: 'var(--font-body)',
             lineHeight: '1.6'
           }}>
-            <h4 style={{ color: 'var(--on-surface)', marginBottom: '8px', fontSize: '0.9rem', fontFamily: 'var(--font-display)' }}>💡 Bagaimana Tingkat Keyakinan Dihitung?</h4>
+            <h4 style={{ color: 'var(--on-surface)', marginBottom: '8px', fontSize: '0.9rem', fontFamily: 'var(--font-display)' }}>💡 How is the Confidence Score Calculated?</h4>
             <p style={{ margin: 0 }}>
-              Tingkat keyakinan diambil dari <strong>Kualitas Model Asli (Skor R²)</strong> yang dikurangi dengan <strong>Hukuman Data Ekstrem (Outlier Penalty)</strong>. Semakin ekstrem atau tidak wajar angka cuaca yang Anda masukkan dibandingkan batas wajar masa lalu, maka persentase keyakinan model akan semakin menurun.
+              The confidence score is derived from the <strong>Original Model Quality (R² Score)</strong> minus an <strong>Extreme Data Penalty (Outlier Penalty)</strong>. The more extreme or unnatural the weather inputs are compared to historical baselines, the lower the model's confidence percentage will drop.
             </p>
           </div>
         )}
